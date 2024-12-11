@@ -56,7 +56,7 @@ body {
 .hero {
     height: 100vh;
     background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-        url('https: //d2r3z0h7oyiawr.cloudfront.net/pictures/2028/aa4063f3ddbf47a455101b4e7d54f55945f686c8/soy_troubleshoot_guide_header.jpeg');
+        url('https://i.pinimg.com/736x/28/c3/4a/28c34adeb36753a2c48553e21c0ba801.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -159,14 +159,26 @@ body {
 
 /* About Section */
 .about {
+    min-height: 100vh;
     padding: 5rem 2rem;
     background-color: #f8f4f1;
+    display: flex;
+    align-items: center;
+}
+
+.about-image {
+    flex-direction: column;
+    margin-right: 2rem;
+    /* Espacement entre l'image et le texte */
+    
 }
 
 .about-content {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
+    flex-direction: column;
+    max-width: none;
+    /* Supprime la limite de largeur car flexbox gère la taille */
+    margin: 0;
+    text-align: left;
 }
 
 .about h2 {
@@ -179,6 +191,11 @@ body {
 .about p {
     color: #666;
     line-height: 1.8;
+}
+
+.about-image img {
+    
+    border-radius: 15px;
 }
 
 /* Contact Section */
