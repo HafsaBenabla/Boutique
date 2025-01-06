@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumière Naturelle - Bougies en Soy Wax</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">Lumière Naturelle</div>
+            <div class="nav-links">
+                <a href="#accueil">Accueil</a>
+                <a href="#produits">Produits</a>
+                <a href="#apropos">À propos</a>
+                <a href="#contact">Contact</a>
+                <a href="#" id="panier-icon">🛒 <span id="panier-count">0</span></a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero" id="accueil">
+        <div class="hero-content">
+            <h1>Illuminez votre intérieur naturellement</h1>
+            <p>Découvrez nos bougies artisanales en soy wax, 100% naturelles et écologiques</p>
+            <a href="#produits" class="cta-button">Découvrir nos bougies</a>
+        </div>
+    </section>
+
+    <section class="products" id="produits">
+        <h2>Nos Collections</h2>
+        <div class="product-container">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?auto=format&fit=crop&q=80"
+                    alt="Bougie Lavande">
+                <h3>Collection Lavande</h3>
+                <p>Une fragrance apaisante pour vos soirées détente</p>
+                <span class="price">24 DH</span>
+                <button class="add-to-cart"
+                    onclick="ajouterAuPanier('Collection Lavande', 24, 'https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?auto=format&fit=crop&q=80')">Ajouter
+                    au panier</button>
+            </div>
+            <div class="product-card">
+                <img src="https://joiebylise.com/cdn/shop/files/Photoroom_20241008_072209.jpg?v=1728399058&width=1946"
+                    alt="Bougie Vanille">
+                <h3>Collection Vanille</h3>
+                <p>Des notes douces et chaleureuses</p>
+                <span class="price">22 DH</span>
+                <button class="add-to-cart"
+                    onclick="ajouterAuPanier('Collection Vanille', 22, 'https://joiebylise.com/cdn/shop/files/Photoroom_20241008_072209.jpg?v=1728399058&width=1946')">Ajouter
+                    au panier</button>
+            </div>
+            <div class="product-card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMefJL8e44_7qcOeyCderrowgNtCboAn3Asw&s"
+                    alt="Bougie Bois de Santal">
+                <h3>Collection Bois de Santal</h3>
+                <p>Une ambiance boisée et élégante</p>
+                <span class="price">26 DH</span>
+                <button class="add-to-cart"
+                    onclick="ajouterAuPanier('Collection Bois de Santal', 26, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMefJL8e44_7qcOeyCderrowgNtCboAn3Asw&s')">Ajouter
+                    au panier</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="apropos">
+        <div class="about-image">
+            <img src="https://i.pinimg.com/736x/41/4c/c6/414cc65e9c9382098cd82dd18c3eff76.jpg" alt="Notre Engagement">
+        </div>
+        <div class="about-content">
+            <h2>Notre Engagement</h2>
+            <p>Chaque bougie est fabriquée à la main avec amour et attention, utilisant uniquement de la cire de soja
+                naturelle et des huiles essentielles pures. Notre engagement envers l'environnement se reflète dans nos
+                emballages recyclables et nos méthodes de production durables.</p>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <h2>Contactez-nous</h2>
+        <form class="contact-form">
+            <input type="text" placeholder="Votre nom" required>
+            <input type="email" placeholder="Votre email" required>
+            <textarea placeholder="Votre message" rows="5" required></textarea>
+            <button type="submit" class="submit-button">Envoyer</button>
+        </form>
+    </section>
+
+    <!-- Ajout de la section panier -->
+    <div id="panier-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Votre Panier</h2>
+            <div id="panier-items"></div>
+            <div id="panier-total">Total: 0 DH</div>
+        </div>
+    </div>
+
+    <script>
+        // Liste des produits dans le panier
+        let produitsAuPanier = [];
+
+        // Éléments du DOM qu'on utilisera souvent
+        const iconePanier = document.getElementById('panier-icon');
+        const modalPanier = document.getElementById('panier-modal');
+        const boutonFermer = document.getElementsByClassName('close')[0];
+        const compteurPanier = document.getElementById('panier-count');
+
+        // Fonction pour ajouter un produit au panier
+        function ajouterAuPanier(nom, prix, image) {
+            // Chercher si le produit existe déjà dans le panier
+            let produitTrouve = false;
+
+            for (let i = 0; i < produitsAuPanier.length; i++) {
+                if (produitsAuPanier[i].nom === nom) {
+                    produitsAuPanier[i].quantite += 1;
+                    produitTrouve = true;
+                    break;
+                }
+            }
+
+            // Si le produit n'existe pas, on l'ajoute
+            if (!produitTrouve) {
+                produitsAuPanier.push({
+                    nom: nom,
+                    prix: prix,
+                    image: image,
+                    quantite: 1
+                });
+            }
+
+            // Mettre à jour l'affichage
+            mettreAJourCompteur();
+            afficherPanier();
+            modalPanier.style.display = "block";
+        }
+
+        // Fonction pour mettre à jour le nombre d'articles
+        function mettreAJourCompteur() {
+            let nombreTotal = 0;
+            for (let i = 0; i < produitsAuPanier.length; i++) {
+                nombreTotal += produitsAuPanier[i].quantite;
+            }
+            compteurPanier.textContent = nombreTotal;
+        }
+
+        // Fonction pour changer la quantité d'un produit
+        function modifierQuantite(index, changement) {
+            produitsAuPanier[index].quantite += changement;
+
+            // Supprimer le produit si la quantité est 0
+            if (produitsAuPanier[index].quantite <= 0) {
+                produitsAuPanier.splice(index, 1);
+            }
+
+            mettreAJourCompteur();
+            afficherPanier();
+        }
+
+        // Fonction pour afficher le contenu du panier
+        function afficherPanier() {
+            const conteneurPanier = document.getElementById('panier-items');
+            conteneurPanier.innerHTML = '';
+            let totalPanier = 0;
+
+            // Afficher chaque produit
+            for (let i = 0; i < produitsAuPanier.length; i++) {
+                const produit = produitsAuPanier[i];
+                const elementProduit = document.createElement('div');
+                elementProduit.className = 'panier-item';
+
+                elementProduit.innerHTML = `
+                    <img src="${produit.image}" alt="${produit.nom}" width="50">
+                    <div class="item-details">
+                        <h3>${produit.nom}</h3>
+                        <div class="quantite-controls">
+                            <button onclick="modifierQuantite(${i}, -1)">-</button>
+                            <span>${produit.quantite}</span>
+                            <button onclick="modifierQuantite(${i}, 1)">+</button>
+                        </div>
+                        <p>${produit.prix * produit.quantite} DH</p>
+                    </div>
+                `;
+
+                conteneurPanier.appendChild(elementProduit);
+                totalPanier += produit.prix * produit.quantite;
+            }
+
+            // Afficher le total
+            document.getElementById('panier-total').textContent = `Total: ${totalPanier} DH`;
+        }
+
+        // Événements pour ouvrir/fermer le panier
+        iconePanier.onclick = function () {
+            modalPanier.style.display = "block";
+            afficherPanier();
+        }
+
+        boutonFermer.onclick = function () {
+            modalPanier.style.display = "none";
+        }
+
+        // Fermer le panier si on clique en dehors
+        window.onclick = function (event) {
+            if (event.target == modalPanier) {
+                modalPanier.style.display = "none";
+            }
+        }
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Lumière Naturelle</h3>
+                <p>Artisanat français de bougies naturelles</p>
+            </div>
+            <div class="footer-links">
+                <a href="#accueil">Accueil</a>
+                <a href="#produits">Produits</a>
+                <a href="#apropos">À propos</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Lumière Naturelle. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
