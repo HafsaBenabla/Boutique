@@ -36,36 +36,7 @@
     <section class="products" id="produits">
         <h2>Nos Collections</h2>
         <div class="product-container">
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?auto=format&fit=crop&q=80"
-                    alt="Bougie Lavande">
-                <h3>Collection Lavande</h3>
-                <p>Une fragrance apaisante pour vos soirées détente</p>
-                <span class="price">24 DH</span>
-                <button class="add-to-cart"
-                    onclick="ajouterAuPanier('Collection Lavande', 24, 'https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?auto=format&fit=crop&q=80')">Ajouter
-                    au panier</button>
-            </div>
-            <div class="product-card">
-                <img src="https://joiebylise.com/cdn/shop/files/Photoroom_20241008_072209.jpg?v=1728399058&width=1946"
-                    alt="Bougie Vanille">
-                <h3>Collection Vanille</h3>
-                <p>Des notes douces et chaleureuses</p>
-                <span class="price">22 DH</span>
-                <button class="add-to-cart"
-                    onclick="ajouterAuPanier('Collection Vanille', 22, 'https://joiebylise.com/cdn/shop/files/Photoroom_20241008_072209.jpg?v=1728399058&width=1946')">Ajouter
-                    au panier</button>
-            </div>
-            <div class="product-card">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMefJL8e44_7qcOeyCderrowgNtCboAn3Asw&s"
-                    alt="Bougie Bois de Santal">
-                <h3>Collection Bois de Santal</h3>
-                <p>Une ambiance boisée et élégante</p>
-                <span class="price">26 DH</span>
-                <button class="add-to-cart"
-                    onclick="ajouterAuPanier('Collection Bois de Santal', 26, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMefJL8e44_7qcOeyCderrowgNtCboAn3Asw&s')">Ajouter
-                    au panier</button>
-            </div>
+            <!-- Les produits seront générés par JavaScript -->
         </div>
     </section>
 
@@ -100,118 +71,7 @@
             <div id="panier-total">Total: 0 DH</div>
         </div>
     </div>
-
-    <script>
-        // Liste des produits dans le panier
-        let produitsAuPanier = [];
-
-        // Éléments du DOM qu'on utilisera souvent
-        const iconePanier = document.getElementById('panier-icon');
-        const modalPanier = document.getElementById('panier-modal');
-        const boutonFermer = document.getElementsByClassName('close')[0];
-        const compteurPanier = document.getElementById('panier-count');
-
-        // Fonction pour ajouter un produit au panier
-        function ajouterAuPanier(nom, prix, image) {
-            // Chercher si le produit existe déjà dans le panier
-            let produitTrouve = false;
-
-            for (let i = 0; i < produitsAuPanier.length; i++) {
-                if (produitsAuPanier[i].nom === nom) {
-                    produitsAuPanier[i].quantite += 1;
-                    produitTrouve = true;
-                    break;
-                }
-            }
-
-            // Si le produit n'existe pas, on l'ajoute
-            if (!produitTrouve) {
-                produitsAuPanier.push({
-                    nom: nom,
-                    prix: prix,
-                    image: image,
-                    quantite: 1
-                });
-            }
-
-            // Mettre à jour l'affichage
-            mettreAJourCompteur();
-            afficherPanier();
-            modalPanier.style.display = "block";
-        }
-
-        // Fonction pour mettre à jour le nombre d'articles
-        function mettreAJourCompteur() {
-            let nombreTotal = 0;
-            for (let i = 0; i < produitsAuPanier.length; i++) {
-                nombreTotal += produitsAuPanier[i].quantite;
-            }
-            compteurPanier.textContent = nombreTotal;
-        }
-
-        // Fonction pour changer la quantité d'un produit
-        function modifierQuantite(index, changement) {
-            produitsAuPanier[index].quantite += changement;
-
-            // Supprimer le produit si la quantité est 0
-            if (produitsAuPanier[index].quantite <= 0) {
-                produitsAuPanier.splice(index, 1);
-            }
-
-            mettreAJourCompteur();
-            afficherPanier();
-        }
-
-        // Fonction pour afficher le contenu du panier
-        function afficherPanier() {
-            const conteneurPanier = document.getElementById('panier-items');
-            conteneurPanier.innerHTML = '';
-            let totalPanier = 0;
-
-            // Afficher chaque produit
-            for (let i = 0; i < produitsAuPanier.length; i++) {
-                const produit = produitsAuPanier[i];
-                const elementProduit = document.createElement('div');
-                elementProduit.className = 'panier-item';
-
-                elementProduit.innerHTML = `
-                    <img src="${produit.image}" alt="${produit.nom}" width="50">
-                    <div class="item-details">
-                        <h3>${produit.nom}</h3>
-                        <div class="quantite-controls">
-                            <button onclick="modifierQuantite(${i}, -1)">-</button>
-                            <span>${produit.quantite}</span>
-                            <button onclick="modifierQuantite(${i}, 1)">+</button>
-                        </div>
-                        <p>${produit.prix * produit.quantite} DH</p>
-                    </div>
-                `;
-
-                conteneurPanier.appendChild(elementProduit);
-                totalPanier += produit.prix * produit.quantite;
-            }
-
-            // Afficher le total
-            document.getElementById('panier-total').textContent = `Total: ${totalPanier} DH`;
-        }
-
-        // Événements pour ouvrir/fermer le panier
-        iconePanier.onclick = function () {
-            modalPanier.style.display = "block";
-            afficherPanier();
-        }
-
-        boutonFermer.onclick = function () {
-            modalPanier.style.display = "none";
-        }
-
-        // Fermer le panier si on clique en dehors
-        window.onclick = function (event) {
-            if (event.target == modalPanier) {
-                modalPanier.style.display = "none";
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 
     <footer class="footer">
         <div class="footer-content">
