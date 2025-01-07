@@ -20,10 +20,12 @@
                 <a href="#produits">Produits</a>
                 <a href="#apropos">À propos</a>
                 <a href="#contact">Contact</a>
+                <a href="#" id="favoris-icon"><span class="coeur-icon">❤️</span> <span id="favoris-count">0</span></a>
                 <a href="#" id="panier-icon">🛒 <span id="panier-count">0</span></a>
             </div>
         </nav>
     </header>
+
 
     <section class="hero" id="accueil">
         <div class="hero-content">
@@ -36,7 +38,7 @@
     <section class="products" id="produits">
         <h2>Nos Collections</h2>
         <div class="product-container">
-            <!-- Les produits seront générés par JavaScript -->
+
         </div>
     </section>
 
@@ -61,6 +63,15 @@
             <button type="submit" class="submit-button">Envoyer</button>
         </form>
     </section>
+
+    <!-- Modal pour les favoris -->
+    <div id="favoris-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Mes Favoris</h2>
+            <div id="favoris-liste"></div>
+        </div>
+    </div>
 
     <!-- Ajout de la section panier -->
     <div id="panier-modal" class="modal">

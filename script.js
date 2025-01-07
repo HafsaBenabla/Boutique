@@ -1,4 +1,4 @@
-// Données des produits
+// Liste des produits
 const produits = [
     {
         nom: 'Collection Lavande',
@@ -20,17 +20,39 @@ const produits = [
     }
 ];
 
-// Fonction pour générer les produits
-function AfficherProduits() {
-    const produitsContainer = document.querySelector('.product-container');
+// Tableaux pour stocker les produits du panier et des favoris
+let produitsAuPanier = [];
+let produitsFavoris = [];
+
+// Fonction pour afficher tous les produits sur la page
+function afficherProduits() {
+    let conteneur = document.querySelector('.product-container');
+    conteneur.innerHTML = '';
 
     for (let i = 0; i < produits.length; i++) {
-        const produit = produits[i];
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
+        let produit = produits[i];
+        let estFavori = false;
+        for (let j = 0; j < produitsFavoris.length; j++) {
+            if (produitsFavoris[j].nom === produit.nom) {
+                estFavori = true;
+                break;
+            }
+        }
 
-        productCard.innerHTML = `
-            <img src="${produit.image}" alt="${produit.nom}">
+        let carte = document.createElement('div');
+        carte.className = 'product-card';
+        let classeBouton = "favori";
+        if (estFavori) {
+            classeBouton = "favori active";
+        }
+
+        carte.innerHTML = `
+            <div class="product-header">
+                <img src="${produit.image}" alt="${produit.nom}">
+                <button class="${classeBouton}" onclick="gererFavoris('${produit.nom}', ${produit.prix}, '${produit.image}')">
+                    <span class="coeur-icon">❤️</span>
+                </button>
+            </div>
             <h3>${produit.nom}</h3>
             <p>${produit.description}</p>
             <span class="price">${produit.prix} DH</span>
@@ -39,33 +61,95 @@ function AfficherProduits() {
             </button>
         `;
 
-        produitsContainer.appendChild(productCard);
+        conteneur.appendChild(carte);
     }
 }
 
-// Liste des produits dans le panier
-let produitsAuPanier = [];
+// Fonction pour gérer les favoris (ajouter/retirer)
+function gererFavoris(nom, prix, image) {
+    let dejaFavori = false;
+    let position = -1;
 
-const iconePanier = document.getElementById('panier-icon');
-const modalPanier = document.getElementById('panier-modal');
-const boutonFermer = document.getElementsByClassName('close')[0];
-const compteurPanier = document.getElementById('panier-count');
-
-// Fonction pour ajouter un produit au panier
-function ajouterAuPanier(nom, prix, image) {
-    // Chercher si le produit existe déjà dans le panier
-    let produitTrouve = false;
-
-    for (let i = 0; i < produitsAuPanier.length; i++) {
-        if (produitsAuPanier[i].nom === nom) {
-            produitsAuPanier[i].quantite += 1;
-            produitTrouve = true;
+    for (let i = 0; i < produitsFavoris.length; i++) {
+        if (produitsFavoris[i].nom === nom) {
+            dejaFavori = true;
+            position = i;
             break;
         }
     }
 
-    // Si le produit n'existe pas, on l'ajoute
-    if (!produitTrouve) {
+    if (!dejaFavori) {
+        let nouveauFavori = {
+            nom: nom,
+            prix: prix,
+            image: image
+        };
+        produitsFavoris.push(nouveauFavori);
+    }
+
+    else {
+        produitsFavoris.splice(position, 1);
+    }
+
+    afficherProduits();
+    mettreAJourCompteurFavoris();
+    afficherFavoris();
+}
+
+// Fonction pour afficher la liste des favoris
+function afficherFavoris() {
+    let liste = document.getElementById('favoris-liste');
+    liste.innerHTML = '';
+
+    if (produitsFavoris.length === 0) {
+        liste.innerHTML = '<p>Aucun article dans vos favoris</p>';
+        return;
+    }
+
+    for (let i = 0; i < produitsFavoris.length; i++) {
+        let produit = produitsFavoris[i];
+        let element = document.createElement('div');
+        element.className = 'favori-item';
+        element.innerHTML = `
+            <img src="${produit.image}" alt="${produit.nom}">
+            <div class="favori-info">
+                <h3>${produit.nom}</h3>
+                <p>${produit.prix} DH</p>
+            </div>
+            <button class="supprimer-favori" onclick="supprimerFavori(${i})">Supprimer</button>
+        `;
+        liste.appendChild(element);
+    }
+}
+
+// Fonction pour supprimer un favori
+function supprimerFavori(position) {
+    produitsFavoris.splice(position, 1);
+    afficherProduits();
+    mettreAJourCompteurFavoris();
+    afficherFavoris();
+}
+
+// Fonction pour mettre à jour le nombre de favoris
+function mettreAJourCompteurFavoris() {
+    let compteur = document.getElementById('favoris-count');
+    compteur.textContent = produitsFavoris.length;
+}
+
+// Fonction pour ajouter au panier
+function ajouterAuPanier(nom, prix, image) {
+    
+    let dejaAuPanier = false;
+
+    for (let i = 0; i < produitsAuPanier.length; i++) {
+        if (produitsAuPanier[i].nom === nom) {
+            produitsAuPanier[i].quantite += 1;
+            dejaAuPanier = true;
+            break;
+        }
+    }
+
+    if (!dejaAuPanier) {
         produitsAuPanier.push({
             nom: nom,
             prix: prix,
@@ -74,86 +158,101 @@ function ajouterAuPanier(nom, prix, image) {
         });
     }
 
-    // Mettre à jour l'affichage
-    mettreAJourCompteur();
+    // On met à jour l'affichage
+    mettreAJourCompteurPanier();
     afficherPanier();
-    modalPanier.style.display = "block";
 }
 
-// Fonction pour mettre à jour le nombre d'articles
-function mettreAJourCompteur() {
-    let nombreTotal = 0;
+// Fonction pour mettre à jour le nombre d'articles dans le panier
+function mettreAJourCompteurPanier() {
+    let total = 0;
     for (let i = 0; i < produitsAuPanier.length; i++) {
-        nombreTotal += produitsAuPanier[i].quantite;
+        total += produitsAuPanier[i].quantite;
     }
-    compteurPanier.textContent = nombreTotal;
+    document.getElementById('panier-count').textContent = total;
 }
 
-// Fonction pour changer la quantité d'un produit
-function modifierQuantite(index, changement) {
-    produitsAuPanier[index].quantite += changement;
-
-    // Supprimer le produit si la quantité est 0
-    if (produitsAuPanier[index].quantite <= 0) {
-        produitsAuPanier.splice(index, 1);
-    }
-
-    mettreAJourCompteur();
-    afficherPanier();
-}
-
-// Fonction pour afficher le contenu du panier
+// Fonction pour afficher le panier
 function afficherPanier() {
-    const conteneurPanier = document.getElementById('panier-items');
-    conteneurPanier.innerHTML = '';
-    let totalPanier = 0;
+    let liste = document.getElementById('panier-liste');
+    liste.innerHTML = '';
 
-    // Afficher chaque produit
+    // Si panier vide, on affiche un message
+    if (produitsAuPanier.length === 0) {
+        liste.innerHTML = '<p>Votre panier est vide</p>';
+        return;
+    }
+
+    // Pour chaque produit dans le panier
+    let total = 0;
     for (let i = 0; i < produitsAuPanier.length; i++) {
-        const produit = produitsAuPanier[i];
-        const elementProduit = document.createElement('div');
-        elementProduit.className = 'panier-item';
+        let produit = produitsAuPanier[i];
+        total += produit.prix * produit.quantite;
 
-        elementProduit.innerHTML = `
-                    <img src="${produit.image}" alt="${produit.nom}" width="50">
-                    <div class="item-details">
-                        <h3>${produit.nom}</h3>
-                        <div class="quantite-controls">
-                            <button onclick="modifierQuantite(${i}, -1)">-</button>
-                            <span>${produit.quantite}</span>
-                            <button onclick="modifierQuantite(${i}, 1)">+</button>
-                        </div>
-                        <p>${produit.prix * produit.quantite} DH</p>
-                    </div>
-                `;
-
-        conteneurPanier.appendChild(elementProduit);
-        totalPanier += produit.prix * produit.quantite;
+        let element = document.createElement('div');
+        element.className = 'panier-item';
+        element.innerHTML = `
+            <img src="${produit.image}" alt="${produit.nom}">
+            <div class="panier-info">
+                <h3>${produit.nom}</h3>
+                <p>${produit.prix} DH x ${produit.quantite}</p>
+            </div>
+            <div class="quantite-controls">
+                <button onclick="modifierQuantite(${i}, -1)">-</button>
+                <span>${produit.quantite}</span>
+                <button onclick="modifierQuantite(${i}, 1)">+</button>
+            </div>
+        `;
+        liste.appendChild(element);
     }
 
     // Afficher le total
-    document.getElementById('panier-total').textContent = `Total: ${totalPanier} DH`;
+    document.getElementById('panier-total').textContent = `Total: ${total} DH`;
 }
 
-// Événements pour ouvrir/fermer le panier
-iconePanier.onclick = function () {
-    modalPanier.style.display = "block";
+// Fonction pour modifier la quantité d'un produit dans le panier
+function modifierQuantite(position, changement) {
+    produitsAuPanier[position].quantite += changement;
+
+    // Si quantité arrive à 0, on retire le produit
+    if (produitsAuPanier[position].quantite <= 0) {
+        produitsAuPanier.splice(position, 1);
+    }
+
+   
+    mettreAJourCompteurPanier();
     afficherPanier();
 }
 
-boutonFermer.onclick = function () {
-    modalPanier.style.display = "none";
+// Événements pour les modals
+document.getElementById('favoris-icon').onclick = function () {
+    document.getElementById('favoris-modal').style.display = 'block';
+    afficherFavoris();
+};
+
+document.getElementById('panier-icon').onclick = function () {
+    document.getElementById('panier-modal').style.display = 'block';
+    afficherPanier();
+};
+
+// Fermer les modals quand on clique sur X
+let boutonsFermer = document.querySelectorAll('.close');
+for (let i = 0; i < boutonsFermer.length; i++) {
+    boutonsFermer[i].onclick = function () {
+        this.parentElement.parentElement.style.display = 'none';
+    };
 }
 
-// Fermer le panier si on clique en dehors
+// Fermer les modals si on clique en dehors
 window.onclick = function (event) {
-    if (event.target == modalPanier) {
-        modalPanier.style.display = "none";
+    if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
     }
-}
+};
 
-// Appeler la fonction au chargement de la page
+// Initialiser l'affichage au chargement de la page
 document.addEventListener('DOMContentLoaded', function () {
-    AfficherProduits();
-    mettreAJourCompteur();
+    afficherProduits();
+    mettreAJourCompteurPanier();
+    mettreAJourCompteurFavoris();
 });
